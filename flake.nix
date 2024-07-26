@@ -5,7 +5,6 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixvim.url = "github:nix-community/nixvim";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    stylix.url = "github:danth/stylix";
   };
 
   outputs = {
@@ -32,7 +31,6 @@
           module = import ./config; # import the module directly
           # You can use `extraSpecialArgs` to pass additional arguments to your module files
           extraSpecialArgs = {
-            inherit (inputs) stylix;
           };
         };
         nvim = nixvim'.makeNixvimWithModule nixvimModule;
