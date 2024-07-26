@@ -26,14 +26,22 @@
       }: let
         nixvimLib = nixvim.lib.${system};
         nixvim' = nixvim.legacyPackages.${system};
-        nixvimModule = {
+        nixvimModuleFull = {
           inherit pkgs;
           module = import ./config; # import the module directly
           # You can use `extraSpecialArgs` to pass additional arguments to your module files
           extraSpecialArgs = {
           };
         };
-        nvim = nixvim'.makeNixvimWithModule nixvimModule;
+        nvimFull = nixvim'.makeNixvimWithModule nixvimModuleFull;
+        nixvimModuleLite = {
+          inherit pkgs;
+          module = import ./lite.nix; # import the module directly
+          # You can use `extraSpecialArgs` to pass additional arguments to your module files
+          extraSpecialArgs = {
+          };
+        };
+        nvimLite = nixvim'.makeNixvimWithModule nixvimModuleLite;
       in {
         _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
@@ -42,12 +50,28 @@
 
         checks = {
           # Run `nix flake check .` to verify that your config is not broken
-          default = nixvimLib.check.mkTestDerivationFromNixvimModule nixvimModule;
+          default = nixvimLib.check.mkTestDerivationFromNixvimModule nixvimModuleFull;
         };
 
         packages = {
           # Lets you run `nix run .` to start nixvim
-          default = nvim;
+          default = nvimLite;
+          nvim-lite = nvimLite;
+          nvim-full = nvimFull;
+          docker-full = pkgs.dockerTools.buildImage {
+            name = "nvim";
+            tag = "full";
+            config = {
+              Cmd = ["${nvimFull}/bin/nvim"];
+            };
+          };
+          docker-lite = pkgs.dockerTools.buildImage {
+            name = "nvim";
+            tag = "lite";
+            config = {
+              Cmd = ["${nvimLite}/bin/nvim"];
+            };
+          };
         };
         formatter = pkgs.alejandra;
       };

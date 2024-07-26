@@ -15,8 +15,9 @@
         (builtins.readDir path)));
 in {
   # Import all your configuration modules here
-  imports = scanPaths ./.;
+  imports = (scanPaths ./.) ++ [../module.nix];
 
+  coldsteel.go = false;
   extraConfigLuaPre = ''
     local has_words_before = function()
     unpack = unpack or table.unpack

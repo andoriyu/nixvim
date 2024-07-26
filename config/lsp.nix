@@ -1,16 +1,22 @@
-{pkgs, ...}: {
-  plugins.lsp = {
+{
+  pkgs,
+  config,
+  ...
+}: {
+  plugins.lsp = let
+    cfg = config.coldsteel;
+  in {
     enable = true;
     servers = {
       bashls.enable = true;
-      dockerls.enable = true;
-      gopls.enable = true;
+      dockerls.enable = cfg.docker;
+      gopls.enable = cfg.go;
       nixd.enable = true;
-      tailwindcss.enable = true;
-      terraformls.enable = true;
+      tailwindcss.enable = cfg.web;
+      terraformls.enable = cfg.terraform;
       yamlls.enable = true;
-      eslint.enable = true;
-      denols.enable = true;
+      eslint.enable = cfg.web;
+      denols.enable = cfg.web;
     };
   };
 
@@ -87,7 +93,7 @@
 
   plugins.cmp-path = {enable = true;};
 
-  plugins.rust-tools = {enable = true;};
+  plugins.rust-tools = {enable = config.coldsteel.rust;};
 
   keymaps = [
     {

@@ -1,6 +1,6 @@
-{
+{config, ...}: {
   config.plugins.none-ls = {
-    enable = true;
+    enable = config.coldsteel.none-ls;
     sources = {
       code_actions = {
         statix.enable = true;
