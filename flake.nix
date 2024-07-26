@@ -5,11 +5,16 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixvim.url = "github:nix-community/nixvim";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    nix-github-actions.url = "github:nix-community/nix-github-actions";
+    nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
+    self,
     nixvim,
+    nixpkgs,
     flake-parts,
+    nix-github-actions,
     ...
   } @ inputs:
     flake-parts.lib.mkFlake {inherit inputs;} {
@@ -18,6 +23,12 @@
         "aarch64-linux"
         "aarch64-darwin"
       ];
+
+      flake = {
+        githubActions = nix-github-actions.lib.mkGithubMatrix {
+          checks = nixpkgs.lib.getAttrs ["x86_64-linux" "aarch64-darwin"] self.packages;
+        };
+      };
 
       perSystem = {
         pkgs,
