@@ -1,6 +1,15 @@
 {
   description = "A nixvim configuration";
-
+  nixConfig = {
+    extra-substituters = [
+      "https://nix-community.cachix.org"
+      "https://andoriyu-nixvim.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "andoriyu-nixvim.cachix.org-1:lbYebqqAT6xXnTeRlvo5eW18VeRNTCZNGLQ/UsPqr+0="
+    ];
+  };
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixvim.url = "github:nix-community/nixvim";
