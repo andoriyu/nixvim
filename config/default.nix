@@ -1,4 +1,8 @@
-{lib, ...}: let
+{
+  lib,
+  pkgs,
+  ...
+}: let
   scanPaths = path:
     builtins.map
     (f: (path + "/${f}"))
@@ -31,4 +35,6 @@ in {
     illuminate.enable = true;
     rainbow-delimiters.enable = true;
   };
+
+
 }
