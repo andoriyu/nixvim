@@ -93,7 +93,7 @@
 
   plugins.cmp-path = {enable = true;};
 
-  plugins.rust-tools = {enable = config.coldsteel.rust;};
+  plugins.rustaceanvim = {enable = config.coldsteel.rust;};
 
   keymaps = [
     {
