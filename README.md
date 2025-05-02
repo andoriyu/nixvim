@@ -25,6 +25,55 @@ Run the full configuration with all language support:
 nix run .#nvim-full
 ```
 
+### Home Manager Integration
+
+Add to your Home Manager configuration:
+
+```nix
+{
+  inputs.coldsteel-nixvim.url = "github:andoriyu/nixvim";
+  
+  outputs = { self, nixpkgs, home-manager, coldsteel-nixvim, ... }: {
+    homeConfigurations."username" = home-manager.lib.homeManagerConfiguration {
+      # ...
+      modules = [
+        coldsteel-nixvim.homeManagerModules.default
+        {
+          coldsteel.nixvim = {
+            enable = true;
+            defaultEditor = true;
+            
+            # Enable specific language support
+            go = true;
+            rust = true;
+            
+            # Or use a preset configuration
+            # preset = "full";  # Options: "none", "lite", "full", "custom"
+          };
+        }
+      ];
+    };
+  };
+}
+```
+
+### Using the Library Function
+
+You can also use the provided library function to create a custom configuration:
+
+```nix
+{
+  environment.systemPackages = [
+    (inputs.coldsteel-nixvim.lib.mkNixvim {
+      system = pkgs.system;
+      go = true;
+      rust = true;
+      none-ls = true;
+    })
+  ];
+}
+```
+
 ## Configuration Profiles
 
 ### Full Profile
