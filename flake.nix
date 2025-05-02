@@ -16,6 +16,10 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     nix-github-actions.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -24,6 +28,7 @@
     nixpkgs,
     flake-parts,
     nix-github-actions,
+    home-manager,
     ...
   } @ inputs:
     flake-parts.lib.mkFlake {inherit inputs;} {
@@ -34,8 +39,44 @@
       ];
 
       flake = {
+        # Home Manager module
+        homeManagerModules.default = { config, lib, pkgs, ... }: 
+          let 
+            # Import the module directly with the nixvim input
+            module = import ./home-manager-module.nix { 
+              inherit pkgs config lib;
+              nixvim = inputs.nixvim;
+            };
+          in module;
+        
+        # NixOS module
+        nixosModules.default = { config, pkgs, lib, ... }: {
+          imports = [ self.homeManagerModules.default ];
+        };
+        
+        # Library functions that can be used by consumers of this flake
+        lib = {
+          # Function to build a custom nixvim configuration
+          mkNixvim = { system, go ? false, docker ? false, terraform ? false, web ? false, rust ? false, none-ls ? false }:
+            let
+              pkgs = nixpkgs.legacyPackages.${system};
+              nixvim' = nixvim.legacyPackages.${system};
+            in
+              nixvim'.makeNixvimWithModule {
+                inherit pkgs;
+                module = {
+                  imports = [ ./config ];
+                  coldsteel.nixvim = {
+                    inherit go docker terraform web rust;
+                    "none-ls" = none-ls;
+                  };
+                };
+              };
+        };
+        
+        # GitHub Actions
         githubActions = nix-github-actions.lib.mkGithubMatrix {
-          checks = nixpkgs.lib.getAttrs ["x86_64-linux" "aarch64-darwin"] self.packages;
+          checks = nixpkgs.lib.getAttrs ["x86_64-linux" "aarch64-darwin"] self.checks;
         };
       };
 
@@ -46,21 +87,21 @@
       }: let
         nixvimLib = nixvim.lib.${system};
         nixvim' = nixvim.legacyPackages.${system};
+          
         nixvimModuleFull = {
           inherit pkgs;
           module = import ./full.nix; # import the module directly
-          # You can use `extraSpecialArgs` to pass additional arguments to your module files
-          extraSpecialArgs = {
-          };
+          extraSpecialArgs = {};
         };
+        
         nvimFull = nixvim'.makeNixvimWithModule nixvimModuleFull;
+        
         nixvimModuleLite = {
           inherit pkgs;
           module = import ./lite.nix; # import the module directly
-          # You can use `extraSpecialArgs` to pass additional arguments to your module files
-          extraSpecialArgs = {
-          };
+          extraSpecialArgs = {};
         };
+        
         nvimLite = nixvim'.makeNixvimWithModule nixvimModuleLite;
       in {
         _module.args.pkgs = import inputs.nixpkgs {
@@ -71,6 +112,8 @@
         checks = {
           # Run `nix flake check .` to verify that your config is not broken
           default = nixvimLib.check.mkTestDerivationFromNixvimModule nixvimModuleFull;
+          nvim-lite = nvimLite;
+          nvim-full = nvimFull;
         };
 
         packages = {
@@ -78,6 +121,7 @@
           default = nvimLite;
           nvim-lite = nvimLite;
           nvim-full = nvimFull;
+          
           docker-full = pkgs.dockerTools.buildImage {
             name = "nvim";
             tag = "full";
