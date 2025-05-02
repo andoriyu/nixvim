@@ -114,6 +114,14 @@
           default = nixvimLib.check.mkTestDerivationFromNixvimModule nixvimModuleFull;
           nvim-lite = nvimLite;
           nvim-full = nvimFull;
+          
+          # Test the home-manager module
+          home-manager-module = import ./tests/home-manager-module-test.nix {
+            inherit pkgs;
+            lib = nixpkgs.lib;
+            nixvimMock = import ./tests/nixvim-mock.nix { inherit pkgs system; };
+            hmLib = inputs.home-manager.lib;
+          };
         };
 
         packages = {

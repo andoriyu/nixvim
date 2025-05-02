@@ -4,7 +4,7 @@
   ...
 }: {
   plugins.lsp = let
-    cfg = config.coldsteel;
+    cfg = config.coldsteel.nixvim;
   in {
     enable = true;
     servers = {
@@ -93,7 +93,7 @@
 
   plugins.cmp-path = {enable = true;};
 
-  plugins.rustaceanvim = {enable = config.coldsteel.rust;};
+  plugins.rustaceanvim = {enable = config.coldsteel.nixvim.rust;};
 
   keymaps = [
     {

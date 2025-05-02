@@ -1,7 +1,7 @@
 {
   imports = [./config];
 
-  coldsteel = {
+  coldsteel.nixvim = {
     go = true;
     docker = true;
     terraform = true;

@@ -37,7 +37,7 @@ in {
     terraform = mkEnableOption "plugin support for Terraform";
     web = mkEnableOption "plugin support for Web Development";
     rust = mkEnableOption "plugin support for Rust";
-    none-ls = mkEnableOption "none-ls plugin";
+    "none-ls" = mkEnableOption "none-ls plugin";
     
     # Preset configurations
     preset = mkOption {
@@ -74,13 +74,13 @@ in {
             terraform = false;
             web = false;
             rust = false;
-            none-ls = false;
+            "none-ls" = false;
           }
         else
           # Custom configuration
           buildNixvim {
             inherit (cfg) go docker terraform web rust;
-            none-ls = cfg.none-ls;
+            "none-ls" = cfg."none-ls";
           };
     in [ nvimPackage ];
     
