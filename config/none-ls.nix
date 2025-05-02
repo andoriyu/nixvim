@@ -1,6 +1,6 @@
 {config, ...}: {
   config.plugins.none-ls = {
-    enable = config.coldsteel.none-ls;
+    enable = config.coldsteel.nixvim.none-ls;
     sources = {
       code_actions = {
         statix.enable = true;

@@ -1,18 +1,206 @@
-# Nixvim template
+# Nixvim Configuration
 
-This template gives you a good starting point for configuring nixvim standalone.
+A customizable Neovim configuration using [nixvim](https://github.com/nix-community/nixvim), allowing you to manage your Neovim setup through Nix.
 
-## Configuring
+## Features
 
-To start configuring, just add or modify the nix files in `./config`.
-If you add a new configuration file, remember to add it to the
-[`config/default.nix`](./config/default.nix) file
+- **Modular Configuration**: Easily add or modify components
+- **Multiple Profiles**: Choose between full-featured or lightweight setups
+- **Language Support**: Preconfigured for Go, Rust, Terraform, Docker, and web development
+- **Docker Integration**: Run your configuration in containers
+- **Cachix Support**: Faster builds with pre-built binaries
+- **GitHub Actions**: Automated testing across platforms
 
-## Testing your new configuration
+## Quick Start
 
-To test your configuration simply run the following command
+Run the default (lite) configuration:
 
-```
+```bash
 nix run .
 ```
-# nixvim
+
+Run the full configuration with all language support:
+
+```bash
+nix run .#nvim-full
+```
+
+### Home Manager Integration
+
+Add to your Home Manager configuration:
+
+```nix
+{
+  inputs.coldsteel-nixvim.url = "github:andoriyu/nixvim";
+  
+  outputs = { self, nixpkgs, home-manager, coldsteel-nixvim, ... }: {
+    homeConfigurations."username" = home-manager.lib.homeManagerConfiguration {
+      # ...
+      modules = [
+        coldsteel-nixvim.homeManagerModules.default
+        {
+          coldsteel.nixvim = {
+            enable = true;
+            defaultEditor = true;
+            
+            # Enable specific language support
+            go = true;
+            rust = true;
+            
+            # Or use a preset configuration
+            # preset = "full";  # Options: "none", "lite", "full", "custom"
+          };
+        }
+      ];
+    };
+  };
+}
+```
+
+### Using the Library Function
+
+You can also use the provided library function to create a custom configuration:
+
+```nix
+{
+  environment.systemPackages = [
+    (inputs.coldsteel-nixvim.lib.mkNixvim {
+      system = pkgs.system;
+      go = true;
+      rust = true;
+      none-ls = true;
+    })
+  ];
+}
+```
+
+## Configuration Profiles
+
+### Full Profile
+
+Includes comprehensive language support and plugins:
+
+```bash
+nix run .#nvim-full
+```
+
+### Lite Profile
+
+A minimal configuration without language-specific plugins:
+
+```bash
+nix run .#nvim-lite
+```
+
+## Docker Images
+
+Run your configuration in Docker:
+
+```bash
+# Build the full Docker image
+nix build .#docker-full
+
+# Build the lite Docker image
+nix build .#docker-lite
+```
+
+## Customization
+
+### Adding New Plugins
+
+1. Create a new `.nix` file in the `config/` directory
+2. Add your plugin configuration
+3. The file will be automatically imported
+
+### Modifying Language Support
+
+Edit `full.nix` or `lite.nix` to enable/disable specific language support:
+
+```nix
+{
+  imports = [./config];
+
+  coldsteel = {
+    go = true;        # Go support
+    docker = true;    # Docker support
+    terraform = true; # Terraform support
+    web = true;       # Web development support
+    rust = true;      # Rust support
+    none-ls = true;   # None-LS support
+  };
+}
+```
+
+## Testing
+
+Verify your configuration:
+
+```bash
+nix flake check .
+```
+
+## Repository Structure
+
+```
+.
+├── config/                  # Main configuration directory
+│   ├── autopairs.nix        # Auto-pairs plugin configuration
+│   ├── bufferline.nix       # Buffer line plugin configuration
+│   ├── colors.nix           # Color scheme configuration
+│   ├── default.nix          # Main configuration entry point
+│   ├── keymappings.nix      # Keyboard mappings
+│   ├── lsp.nix              # Language Server Protocol configuration
+│   ├── lualine.nix          # Status line configuration
+│   ├── none-ls.nix          # None-LS (null-ls) configuration
+│   ├── oil.nix              # Oil.nvim file explorer configuration
+│   ├── options.nix          # Neovim options
+│   ├── telescope.nix        # Telescope fuzzy finder configuration
+│   └── treesitter.nix       # Treesitter configuration
+├── flake.nix                # Nix flake configuration
+├── full.nix                 # Full configuration profile
+├── lite.nix                 # Lite configuration profile
+├── module.nix               # Custom module options
+└── README.md                # Documentation
+```
+
+## Core Plugins
+
+Always enabled in both configurations:
+
+- `indent-blankline`: Indentation guides
+- `illuminate`: Highlights other uses of the word under cursor
+- `rainbow-delimiters`: Colorizes nested parentheses and brackets
+- `web-devicons`: File icons
+
+## Advanced Configuration
+
+For more advanced configuration:
+
+1. Modify `module.nix` to add new options
+2. Edit `flake.nix` to change dependencies or add packages
+3. Create new configuration profiles
+
+## Cachix Integration
+
+This repository uses Cachix for faster builds:
+
+```
+extra-substituters = [
+  "https://nix-community.cachix.org"
+  "https://andoriyu-nixvim.cachix.org"
+]
+```
+
+## GitHub Actions
+
+Automated testing across platforms:
+- x86_64-linux
+- aarch64-darwin
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).

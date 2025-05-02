@@ -1,6 +1,6 @@
 {lib, ...}: {
   options = {
-    coldsteel = {
+    coldsteel.nixvim = {
       go = lib.mkEnableOption {
         description = "Enables plugin support for Go Lang";
       };
