@@ -197,6 +197,57 @@ Automated testing across platforms:
 - x86_64-linux
 - aarch64-darwin
 
+## Hotkeys and Keybindings
+
+The configuration uses `,` (comma) as the leader key. Here are all the available hotkeys:
+
+### File Operations
+- `,n` - Open Oil file browser
+- `,v` - Create vertical split
+- `,h` - Create horizontal split
+
+### Telescope (Fuzzy Finder)
+- `,ff` - Find files
+- `,fw` - Live grep (search in files)
+- `,fg` - Git commits
+- `,fh` - Recent files (oldfiles)
+- `,fm` - Man pages
+- `,ch` - Change colorscheme
+
+### LSP (Language Server Protocol)
+- `,lf` - Format current buffer
+- `,lo` - Organize imports
+- `,li` - Add missing imports
+
+### Completion (nvim-cmp)
+- `<Tab>` - Select next completion item / expand snippet
+- `<S-Tab>` - Select previous completion item / jump back in snippet
+- `<CR>` - Confirm completion
+- `<C-Space>` - Trigger completion manually
+- `<C-e>` - Abort completion
+- `<Up>` / `<C-p>` - Select previous item
+- `<Down>` / `<C-n>` - Select next item
+- `<C-u>` - Scroll documentation up
+- `<C-d>` - Scroll documentation down
+
+### Default Vim/Neovim Bindings
+These standard bindings are also available:
+- `<C-w>` + direction - Navigate between splits
+- `:` - Command mode
+- `/` - Search forward
+- `?` - Search backward
+- `n` / `N` - Next/previous search result
+- `u` - Undo
+- `<C-r>` - Redo
+- `dd` - Delete line
+- `yy` - Yank (copy) line
+- `p` / `P` - Paste after/before cursor
+
+### Visual Mode
+- `v` - Enter visual mode
+- `V` - Enter visual line mode
+- `<C-v>` - Enter visual block mode
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

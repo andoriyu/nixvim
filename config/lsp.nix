@@ -10,14 +10,60 @@
     servers = {
       bashls.enable = true;
       dockerls.enable = cfg.docker;
-      gopls.enable = cfg.go;
+      gopls = {
+        enable = cfg.go;
+        settings = {
+          gopls = {
+            completeUnimported = true;
+            usePlaceholders = true;
+            analyses = {
+              unusedparams = true;
+            };
+          };
+        };
+      };
       nixd.enable = true;
       tailwindcss.enable = cfg.web;
       terraformls.enable = cfg.terraform;
       yamlls.enable = true;
       eslint.enable = cfg.web;
-      denols.enable = cfg.web;
+      denols = {
+        enable = cfg.web;
+        settings = {
+          deno = {
+            suggest = {
+              completeFunctionCalls = false;
+              imports = {
+                hosts = {
+                  "https://deno.land" = true;
+                };
+              };
+            };
+          };
+        };
+      };
     };
+    
+    onAttach = ''
+      -- Configure LSP import behavior
+      if client.server_capabilities.codeActionProvider then
+        vim.api.nvim_create_autocmd("CursorHold", {
+          buffer = bufnr,
+          callback = function()
+            local params = vim.lsp.util.make_range_params()
+            params.context = { only = { "source.organizeImports" } }
+            local result = vim.lsp.buf_request_sync(bufnr, "textDocument/codeAction", params, 3000)
+            for _, res in pairs(result or {}) do
+              for _, r in pairs(res.result or {}) do
+                if r.edit then
+                  vim.lsp.util.apply_workspace_edit(r.edit, client.offset_encoding)
+                end
+              end
+            end
+          end,
+        })
+      end
+    '';
   };
 
   plugins.lsp-format.enable = true;
@@ -38,19 +84,48 @@
     enable = true;
     settings = {
       sources = [
-        {name = "buffer";}
-        {name = "luasnip";}
-        {name = "nvim_lsp";}
-        {name = "path";}
-        {name = "tmux";}
+        {
+          name = "nvim_lsp";
+          priority = 1000;
+          option = {
+            markdown_oxide = {
+              keyword_pattern = "[[\(\k\| \)]]";
+            };
+          };
+        }
+        {name = "luasnip"; priority = 750;}
+        {name = "buffer"; priority = 500;}
+        {name = "path"; priority = 250;}
+        {name = "tmux"; priority = 100;}
       ];
 
       snippet.expand = ''
         function(args)
           require('luasnip').lsp_expand(args.body)
         end'';
+        
+      completion = {
+        completeopt = "menu,menuone,noinsert";
+      };
+      
+      experimental = {
+        ghost_text = true;
+      };
+      
       mapping = {
-        "<CR>" = "cmp.mapping.confirm({ select = true })";
+        "<CR>" = ''
+          cmp.mapping({
+            i = function(fallback)
+              if cmp.visible() and cmp.get_active_entry() then
+                cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
+              else
+                fallback()
+              end
+            end,
+            s = cmp.mapping.confirm({ select = true }),
+            c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
+          })
+        '';
         "<Tab>" = ''
           cmp.mapping(function(fallback)
             if cmp.visible() then
@@ -104,6 +179,24 @@
       options = {
         silent = true;
         desc = "Format";
+      };
+    }
+    {
+      mode = "n";
+      key = "<leader>lo";
+      action = ":lua vim.lsp.buf.code_action({context = {only = {'source.organizeImports'}}, apply = true})<CR>";
+      options = {
+        silent = true;
+        desc = "Organize Imports";
+      };
+    }
+    {
+      mode = "n";
+      key = "<leader>li";
+      action = ":lua vim.lsp.buf.code_action({context = {only = {'source.addMissingImports'}}, apply = true})<CR>";
+      options = {
+        silent = true;
+        desc = "Add Missing Imports";
       };
     }
   ];
