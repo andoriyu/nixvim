@@ -6,7 +6,7 @@ A customizable Neovim configuration using [nixvim](https://github.com/nix-commun
 
 - **Modular Configuration**: Easily add or modify components
 - **Multiple Profiles**: Choose between full-featured or lightweight setups
-- **Language Support**: Preconfigured for Go, Rust, Terraform, Docker, and web development
+- **Language Support**: Preconfigured for Go, Rust, Elixir, Terraform, Docker, and web development
 - **Docker Integration**: Run your configuration in containers
 - **Cachix Support**: Faster builds with pre-built binaries
 - **GitHub Actions**: Automated testing across platforms
@@ -46,6 +46,7 @@ Add to your Home Manager configuration:
             # Enable specific language support
             go = true;
             rust = true;
+            elixir = true;
             
             # Or use a preset configuration
             # preset = "full";  # Options: "none", "lite", "full", "custom"
@@ -68,6 +69,7 @@ You can also use the provided library function to create a custom configuration:
       system = pkgs.system;
       go = true;
       rust = true;
+      elixir = true;
       none-ls = true;
     })
   ];
@@ -126,6 +128,7 @@ Edit `full.nix` or `lite.nix` to enable/disable specific language support:
     terraform = true; # Terraform support
     web = true;       # Web development support
     rust = true;      # Rust support
+    elixir = true;    # Elixir support
     none-ls = true;   # None-LS support
   };
 }
@@ -218,6 +221,12 @@ The configuration uses `,` (comma) as the leader key. Here are all the available
 - `,lf` - Format current buffer
 - `,lo` - Organize imports
 - `,li` - Add missing imports
+
+### Elixir Development (when enabled)
+- `,em` - Run mix test
+- `,ec` - Run mix compile
+- `,ed` - Get mix dependencies
+- `,ef` - Format current Elixir file
 
 ### Completion (nvim-cmp)
 - `<Tab>` - Select next completion item / expand snippet

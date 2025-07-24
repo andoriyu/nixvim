@@ -21,6 +21,7 @@
         just.enable = true;
         terraform_fmt.enable = true;
         yamlfix.enable = true;
+        mix.enable = config.coldsteel.nixvim.elixir;
       };
     };
   };

@@ -7,6 +7,7 @@
     terraform = true;
     web = true;
     rust = true;
+    elixir = true;
     none-ls = true;
   };
 }

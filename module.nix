@@ -19,6 +19,9 @@
       none-ls = lib.mkEnableOption {
         description = "Enables none-ls plugin";
       };
+      elixir = lib.mkEnableOption {
+        description = "Enables plugin support for Elixir";
+      };
     };
   };
 }
