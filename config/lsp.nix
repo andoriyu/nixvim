@@ -210,5 +210,42 @@
         desc = "Add Missing Imports";
       };
     }
-  ];
+  ] ++ (if config.coldsteel.nixvim.elixir then [
+    {
+      mode = "n";
+      key = "<leader>em";
+      action = ":!mix test<CR>";
+      options = {
+        silent = true;
+        desc = "Run mix test";
+      };
+    }
+    {
+      mode = "n";
+      key = "<leader>ec";
+      action = ":!mix compile<CR>";
+      options = {
+        silent = true;
+        desc = "Run mix compile";
+      };
+    }
+    {
+      mode = "n";
+      key = "<leader>ed";
+      action = ":!mix deps.get<CR>";
+      options = {
+        silent = true;
+        desc = "Get mix dependencies";
+      };
+    }
+    {
+      mode = "n";
+      key = "<leader>ef";
+      action = ":!mix format %<CR>";
+      options = {
+        silent = true;
+        desc = "Format current Elixir file";
+      };
+    }
+  ] else []);
 }
