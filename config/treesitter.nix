@@ -7,26 +7,28 @@ in {
       settings = {
         indent.enable = false;
         highlight.enable = true;
-        ensure_installed = [
-          "bash"
-          "c"
-          "lua"
-          "vim"
-          "vimdoc"
-          "query"
-          "nix"
-          "yaml"
-          "json"
-          "markdown"
-          "markdown_inline"
-        ] ++ (if cfg.elixir then ["elixir" "heex" "eex"] else [])
-          ++ (if cfg.go then ["go" "gomod" "gowork" "gotmpl"] else [])
-          ++ (if cfg.rust then ["rust" "toml"] else [])
-          ++ (if cfg.web then ["html" "css" "javascript" "typescript" "tsx" "jsx"] else [])
-          ++ (if cfg.terraform then ["terraform" "hcl"] else [])
-          ++ (if cfg.docker then ["dockerfile"] else []);
       };
       nixvimInjections = true;
+      
+      # Use grammarPackages instead of ensure_installed for nixvim
+      grammarPackages = with config.plugins.treesitter.package.builtGrammars; [
+        bash
+        c
+        lua
+        vim
+        vimdoc
+        query
+        nix
+        yaml
+        json
+        markdown
+        markdown_inline
+      ] ++ (if cfg.elixir then [elixir heex] else [])
+        ++ (if cfg.go then [go gomod gowork gotmpl] else [])
+        ++ (if cfg.rust then [rust toml] else [])
+        ++ (if cfg.web then [html css javascript typescript tsx] else [])  # Removed jsx
+        ++ (if cfg.terraform then [terraform hcl] else [])
+        ++ (if cfg.docker then [dockerfile] else []);
     };
     treesitter-textobjects = {
       enable = true;
