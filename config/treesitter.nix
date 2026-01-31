@@ -36,10 +36,6 @@ in {
     treesitter-context = {
       enable = true;
     };
-    treesitter-refactor = {
-      enable = true;
-      highlightDefinitions.enable = true;
-    };
   };
   keymaps = [
     {
