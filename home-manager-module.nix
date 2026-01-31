@@ -10,13 +10,13 @@ let
   cfg = config.coldsteel.nixvim;
   
   # Function to build nixvim with the specified options
-  buildNixvim = { go ? false, docker ? false, terraform ? false, web ? false, rust ? false, none-ls ? false }:
+  buildNixvim = { go ? false, docker ? false, terraform ? false, web ? false, rust ? false, elixir ? false, none-ls ? false }:
     nixvim.legacyPackages.${pkgs.system}.makeNixvimWithModule {
       inherit pkgs;
       module = {
         imports = [ ./config ];
         coldsteel.nixvim = {
-          inherit go docker terraform web rust;
+          inherit go docker terraform web rust elixir;
           "none-ls" = none-ls;
         };
       };
@@ -37,8 +37,9 @@ in {
     terraform = mkEnableOption "plugin support for Terraform";
     web = mkEnableOption "plugin support for Web Development";
     rust = mkEnableOption "plugin support for Rust";
+    elixir = mkEnableOption "plugin support for Elixir";
     "none-ls" = mkEnableOption "none-ls plugin";
-    
+
     # Preset configurations
     preset = mkOption {
       type = types.enum [ "none" "lite" "full" "custom" ];
@@ -74,12 +75,13 @@ in {
             terraform = false;
             web = false;
             rust = false;
+            elixir = false;
             "none-ls" = false;
           }
         else
           # Custom configuration
           buildNixvim {
-            inherit (cfg) go docker terraform web rust;
+            inherit (cfg) go docker terraform web rust elixir;
             "none-ls" = cfg."none-ls";
           };
     in [ nvimPackage ];

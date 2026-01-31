@@ -57,7 +57,7 @@
         # Library functions that can be used by consumers of this flake
         lib = {
           # Function to build a custom nixvim configuration
-          mkNixvim = { system, go ? false, docker ? false, terraform ? false, web ? false, rust ? false, none-ls ? false }:
+          mkNixvim = { system, go ? false, docker ? false, terraform ? false, web ? false, rust ? false, elixir ? false, none-ls ? false }:
             let
               pkgs = nixpkgs.legacyPackages.${system};
               nixvim' = nixvim.legacyPackages.${system};
@@ -67,7 +67,7 @@
                 module = {
                   imports = [ ./config ];
                   coldsteel.nixvim = {
-                    inherit go docker terraform web rust;
+                    inherit go docker terraform web rust elixir;
                     "none-ls" = none-ls;
                   };
                 };
