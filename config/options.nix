@@ -24,5 +24,12 @@
 
     # Start scrolling when the cursor is X lines away from the top/bottom
     scrolloff = 5;
+
+    # Case-insensitive search unless uppercase is used
+    ignorecase = true;
+    smartcase = true;
+
+    # Persistent undo across sessions
+    undofile = true;
   };
 }

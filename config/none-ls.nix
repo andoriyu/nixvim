@@ -14,15 +14,6 @@
         ltrs.enable = true;
         yamllint.enable = true;
       };
-      formatting = {
-        alejandra.enable = true;
-        stylua.enable = true;
-        shfmt.enable = true;
-        just.enable = true;
-        terraform_fmt.enable = true;
-        yamlfix.enable = true;
-        mix.enable = config.coldsteel.nixvim.elixir;
-      };
     };
   };
 }

@@ -54,7 +54,7 @@
         };
       };
     };
-    
+
     onAttach = ''
       -- Configure LSP import behavior
       if client.server_capabilities.codeActionProvider then
@@ -77,116 +77,131 @@
     '';
   };
 
-  plugins.lsp-format.enable = true;
-
-  plugins.lspkind = {
-    enable = true;
-    cmp.enable = true;
-  };
-
-  plugins.luasnip = {
-    enable = true;
-    fromVscode = [{}];
-  };
-  plugins.cmp_luasnip.enable = true;
-  plugins.lspsaga.enable = true;
-  extraPackages = with pkgs; [fzf];
-  plugins.cmp = {
+  plugins.blink-cmp = {
     enable = true;
     settings = {
-      sources = [
-        {
-          name = "nvim_lsp";
-          priority = 1000;
-          option = {
-            markdown_oxide = {
-              keyword_pattern = "[[\(\k\| \)]]";
-            };
-          };
-        }
-        {name = "luasnip"; priority = 750;}
-        {name = "buffer"; priority = 500;}
-        {name = "path"; priority = 250;}
-        {name = "tmux"; priority = 100;}
-      ];
-
-      snippet.expand = ''
-        function(args)
-          require('luasnip').lsp_expand(args.body)
-        end'';
-        
+      keymap.preset = "super-tab";
+      appearance.nerd_font_variant = "mono";
+      sources.default = ["lsp" "path" "snippets" "buffer"];
       completion = {
-        completeopt = "menu,menuone,noinsert";
+        documentation.auto_show = true;
+        ghost_text.enabled = true;
       };
-      
-      experimental = {
-        ghost_text = true;
-      };
-      
-      mapping = {
-        "<CR>" = ''
-          cmp.mapping({
-            i = function(fallback)
-              if cmp.visible() and cmp.get_active_entry() then
-                cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
-              else
-                fallback()
-              end
-            end,
-            s = cmp.mapping.confirm({ select = true }),
-            c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
-          })
-        '';
-        "<Tab>" = ''
-          cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-            elseif require("luasnip").expand_or_locally_jumpable() then
-              require("luasnip").expand_or_jump()
-            elseif has_words_before() then
-              cmp.complete()
-            else
-              fallback()
-            end
-          end, { "i", "s" })
-        '';
-        "<S-Tab>" = ''
-          cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
-            elseif require("luasnip").jumpable(-1) then
-              require("luasnip").jump(-1)
-            else
-              fallback()
-            end
-          end, { "i", "s" })
-        '';
-        "<C-Space>" = "cmp.mapping.complete()";
-        "<C-e>" = "cmp.mapping.abort()";
-        "<Up>" = "cmp.mapping.select_prev_item()";
-        "<Down>" = "cmp.mapping.select_next_item()";
-        "<C-p>" = "cmp.mapping.select_prev_item()";
-        "<C-n>" = "cmp.mapping.select_next_item()";
-        "<C-u>" = "cmp.mapping.scroll_docs(-4)";
-        "<C-d>" = "cmp.mapping.scroll_docs(4)";
-      };
+      signature.enabled = true;
     };
   };
-  plugins.cmp-buffer = {enable = true;};
 
-  plugins.cmp-nvim-lsp = {enable = true;};
-  plugins.cmp-nvim-lua = {enable = true;};
-
-  plugins.cmp-path = {enable = true;};
-
+  plugins.lspsaga.enable = true;
   plugins.rustaceanvim = {enable = config.coldsteel.nixvim.rust;};
+  extraPackages = with pkgs; [fzf];
 
   keymaps = [
+    # LSP Navigation
+    {
+      mode = "n";
+      key = "gd";
+      action = "<cmd>lua vim.lsp.buf.definition()<CR>";
+      options = {
+        silent = true;
+        desc = "Go to definition";
+      };
+    }
+    {
+      mode = "n";
+      key = "gD";
+      action = "<cmd>lua vim.lsp.buf.declaration()<CR>";
+      options = {
+        silent = true;
+        desc = "Go to declaration";
+      };
+    }
+    {
+      mode = "n";
+      key = "gi";
+      action = "<cmd>lua vim.lsp.buf.implementation()<CR>";
+      options = {
+        silent = true;
+        desc = "Go to implementation";
+      };
+    }
+    {
+      mode = "n";
+      key = "gr";
+      action = "<cmd>Trouble lsp_references toggle<CR>";
+      options = {
+        silent = true;
+        desc = "References (Trouble)";
+      };
+    }
+    # Lspsaga
+    {
+      mode = "n";
+      key = "K";
+      action = "<cmd>Lspsaga hover_doc<CR>";
+      options = {
+        silent = true;
+        desc = "Hover documentation";
+      };
+    }
+    {
+      mode = "n";
+      key = "<leader>la";
+      action = "<cmd>Lspsaga code_action<CR>";
+      options = {
+        silent = true;
+        desc = "Code action";
+      };
+    }
+    {
+      mode = "n";
+      key = "<leader>lr";
+      action = "<cmd>Lspsaga rename<CR>";
+      options = {
+        silent = true;
+        desc = "Rename";
+      };
+    }
+    {
+      mode = "n";
+      key = "<leader>ld";
+      action = "<cmd>Lspsaga show_line_diagnostics<CR>";
+      options = {
+        silent = true;
+        desc = "Line diagnostics";
+      };
+    }
+    {
+      mode = "n";
+      key = "<leader>ls";
+      action = "<cmd>Lspsaga outline<CR>";
+      options = {
+        silent = true;
+        desc = "Symbols outline";
+      };
+    }
+    {
+      mode = "n";
+      key = "[d";
+      action = "<cmd>Lspsaga diagnostic_jump_prev<CR>";
+      options = {
+        silent = true;
+        desc = "Previous diagnostic";
+      };
+    }
+    {
+      mode = "n";
+      key = "]d";
+      action = "<cmd>Lspsaga diagnostic_jump_next<CR>";
+      options = {
+        silent = true;
+        desc = "Next diagnostic";
+      };
+    }
+    # Formatting (via conform.nvim with LSP fallback)
     {
       mode = "n";
       key = "<leader>lf";
-      action = ":lua vim.lsp.buf.format()<CR>";
-      #    lua = true;
+      action = ":lua require('conform').format({ async = true, lsp_format = 'fallback' })<CR>";
       options = {
         silent = true;
         desc = "Format";
